@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
     //Timer
-    const timeEnd = '2020-10-25T16:22:00';
+    const timeEnd = '2020-10-25T17:23:00';
 
     function getRemainTime(timeEnd) {
 
@@ -54,6 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
         return {
+            diff,
             days,
             hours,
             minutes,
@@ -61,37 +62,39 @@ window.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-
-    function setCurrentTimer(timerSelector) {
-
-        const dataTime = getRemainTime(timeEnd);
-
-        const timerBox = document.querySelector(timerSelector),
-            daysBox    = timerBox.querySelector('#days'),
-            hoursBox   = timerBox.querySelector('#hours'),
-            minutesBox = timerBox.querySelector('#minutes'),
-            secondsBox = timerBox.querySelector('#seconds');
-
-
-        secondsBox.textContent = (dataTime.seconds < 10) ? `0${dataTime.seconds}` : `${dataTime.seconds}`;
-        minutesBox.textContent = (dataTime.minutes < 10) ? `0${dataTime.minutes}` : `${dataTime.minutes}`;
-        hoursBox.textContent   = (dataTime.hours < 10) ? `0${dataTime.hours}` : `${dataTime.hours}`;
-        daysBox.textContent    = (dataTime.days < 10) ? `0${dataTime.days}` : `${dataTime.days}`;
+    function getZero(num) {
+        return (num >= 0 && num < 10) ? `0${num}` : `${(num > 0) ? num : '00'}`;
     }
 
-    setCurrentTimer('.timer');
 
+    function setCurrentTimer(timerSelector, endTime) {
 
-    const idInterval = setInterval(function() {
+        const timerBox = document.querySelector(timerSelector),
+            daysBox = timerBox.querySelector('#days'),
+            hoursBox = timerBox.querySelector('#hours'),
+            minutesBox = timerBox.querySelector('#minutes'),
+            secondsBox = timerBox.querySelector('#seconds'),
+            idInterval = setInterval(setClock, 1000);
 
-        if ( Date.parse(timeEnd) - Date.parse(new Date()) < 0 )  {
-            clearInterval(idInterval);
-        } else {
-            setCurrentTimer('.timer');
+        setClock();
+        function setClock() {
+
+            const dataTime = getRemainTime(endTime);
+
+            secondsBox.textContent = getZero(dataTime.seconds);
+            minutesBox.textContent = getZero(dataTime.minutes);
+            hoursBox.textContent = getZero(dataTime.hours);
+            daysBox.textContent = getZero(dataTime.days);
+
+            if ( dataTime.diff <= 0 ) {
+                clearInterval(idInterval);
+            }
+
         }
 
-    }, 10);
+    }
 
+    setCurrentTimer('.timer',timeEnd);
 
 
 });
