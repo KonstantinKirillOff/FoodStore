@@ -110,14 +110,14 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    closeBtn.forEach((item) => {
+    /* closeBtn.forEach((item) => {
         item.addEventListener('click', function () {
             closeModal(modalForm);
         });
-    });
+    }); */
 
     modalForm.addEventListener('click', function (event) {
-        if (event.target === modalElem) {
+        if (event.target === modalElem || event.target === modalForm || event.target.hasAttribute('data-close')) {
             closeModal(modalForm);
         }
     });
@@ -234,7 +234,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
 
     const errors = {
-        loading: 'Ождайте идет загрузка',
+        loading: 'img/form/spinner.svg',
         sucsess: 'Спасибо за вашу заявку! Мы скоро свяжемся с вами!',
         error: 'При отправке произошла ошибка'
     };
@@ -245,39 +245,93 @@ window.addEventListener('DOMContentLoaded', () => {
 
             event.preventDefault();
 
-            const message = document.createElement('div');
-            message.textContent = errors.loading;
-            form.append(message);
+            const message = document.createElement('img');
+            message.src = errors.loading;
+            message.classList.add('spinerSenter');
+            form.insertAdjacentElement('afterend', message);
 
             let formData = new FormData(form);
 
             const Obj = {};
-            formData.forEach((item,key) => {
+            formData.forEach((item, key) => {
                 Obj[key] = item;
             });
 
             const jsontext = JSON.stringify(Obj);
 
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", "server.php");
-            //xhr.send(formData);
-            xhr.send(jsontext);
-
-            xhr.addEventListener('load', () => {
-                if ( xhr.status === 200 ){
-                    console.log(xhr.response);
-                    message.textContent = errors.sucsess;
+            fetch('server.php', {
+                method: "POST",
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: jsontext,
+            }).then(data => data.text())
+                .then((data) => {
+                    console.log(data);
+                    showThanksModal(errors.sucsess);
+                })
+                .catch(() => {
+                    showThanksModal(errors.error);
+                })
+                .finally(() => {
                     form.reset();
+
+                    setInterval(() => {
+                        message.remove();
+                    }, 2000);
+                });
+
+
+
+
+
+            /* let xhr = new XMLHttpRequest();
+            xhr.open("POST", "server.php");
+            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+            //xhr.send(formData);
+            xhr.send(jsontext); */
+
+            /* xhr.addEventListener('load', () => {
+                if (xhr.status === 200) {
+                    console.log(xhr.response);
+                    //message.textContent = errors.sucsess;
+                    showThanksModal(errors.sucsess);
+                    form.reset();
+                    message.remove();
                 } else {
-                    message.textContent = errors.error;
+                    //message.textContent = errors.error;
+                    showThanksModal(errors.error);
                 }
 
-                setInterval(() => {
-                    message.remove();
-                },2000);
-            });
+
+            }); */
 
         });
+
+    }
+
+    function showThanksModal(message) {
+
+        const modalContent = document.querySelector('.modal__dialog');
+        modalContent.classList.add('hide');
+        showModal();
+
+        const thanksMess = document.createElement('div');
+        thanksMess.classList.add('modal__dialog');
+        thanksMess.innerHTML = `
+        <div class="modal__content">
+            <div data-close class="modal__close">&times;</div>
+            <div class="modal__title">${message}</div>
+        </div>
+        `;
+        modalForm.append(thanksMess);
+
+        setTimeout(() => {
+            closeModal(modalForm);
+            thanksMess.remove();
+            modalContent.classList.add('show');
+            modalContent.classList.remove('hide');
+        }, 2000);
 
     }
 
@@ -285,5 +339,68 @@ window.addEventListener('DOMContentLoaded', () => {
         sendForm(form);
     });
 
+
+    //тренировка по Promise
+    /* console.log('Запрос данных');
+    const prom = new Promise((resolve, regect) => {
+        setTimeout(() => {
+            console.log('Подготовка...');
+            const product = {
+                name: 'TV',
+                price: 2000
+            };
+            resolve(product);
+        }, 2000);
+    }).then((product) => {
+        return new Promise((res, reg) => {
+            setTimeout(() => {
+                console.log('Обработка...');
+                product.status = 'order';
+                res(product);
+            }, 2000);
+        });
+    }).then((data) => {
+        data.modify = true;
+        console.log('modify data...');
+        return data;
+    }).then(finalData => {
+        console.log(finalData);
+    }).catch((d) => {
+        console.log(`${d.name} Ошибка исполнения!`);
+    }).finally((d) => {
+        console.log('finally');
+    }); */
+
+    /* const test = time => {
+        return new Promise(resolve => {
+            setTimeout(() => resolve(),time);
+        });
+    };
+
+    test(1000).then(() => console.log('1000ms'));
+    test(2000).then(() => console.log('2000ms'));
+
+    Promise.all([test(1000), test(2000)]).then(() => {
+        console.log('All');
+    }); //когда нужно дождаться ответов от всех промисов и потом собрать все в кучку. Ждет окончания всех промисов переданных в массив.
+
+    Promise.race([test(1000), test(2000)]).then(() => {
+        console.log('first');
+    }); //выполнится, когда какой либо из промисов будет выполнен. Ждет окончания лишь первого промиса */
+
+    //fetch
+    /* fetch('https://jsonplaceholder.typicode.com/todos/1')
+        .then(response => response.json())
+        .then(json => console.log(json));
+
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: "POST",
+        body: JSON.stringify({ name: "Alex" }),
+        headers: {
+            'Content-type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(json => console.log(json)); */
 
 });

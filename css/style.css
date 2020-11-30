@@ -721,3 +721,8 @@ a {
 .hide {
     display: none;
 }
+
+.spinerSenter {
+    display: block;
+    margin: 0 auto;
+}
