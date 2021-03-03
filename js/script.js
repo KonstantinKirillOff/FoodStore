@@ -1,12 +1,12 @@
 
-import myTabs from './modules/tabs.js';
-import myModal from './modules/modal.js';
-import myTimer from './modules/timer.js';
-import myCards from './modules/cards.js';
-import myForms from './modules/forms.js';
-import mySlider from './modules/slider.js';
-import myCalculator from './modules/calculator.js';
-import {showModal} from './modules/modal.js';
+import myTabs from './modules/tabs';
+import myModal from './modules/modal';
+import myTimer from './modules/timer';
+import myCards from './modules/cards';
+import myForms from './modules/forms';
+import mySlider from './modules/slider';
+import myCalculator from './modules/calculator';
+import {showModal} from './modules/modal';
 
 window.addEventListener('DOMContentLoaded', () => {
 
